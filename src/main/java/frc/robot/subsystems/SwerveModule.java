@@ -5,8 +5,10 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxAbsoluteEncoder;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
 
@@ -16,9 +18,15 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants;
 import frc.robot.Constants.ModuleConstants;
+import frc.robot.utils.SwerveModuleConstants;
 
 public class SwerveModule {
+  private final int m_moduleNumber;
+  private SwerveModuleConstants constants;
+
   private final CANSparkMax m_driveMotor;
   private final CANSparkMax m_turningMotor;
 
@@ -47,32 +55,15 @@ public class SwerveModule {
    * @param driveEncoderReversed Whether the drive encoder is reversed.
    * @param turningEncoderReversed Whether the turning encoder is reversed.
    */
-  public SwerveModule(
-      int driveMotorChannel,
-      int turningMotorChannel,
-      boolean driveEncoderReversed,
-      boolean turningEncoderReversed) {
-    m_driveMotor = new CANSparkMax(driveMotorChannel, MotorType.kBrushless);
-    m_turningMotor = new CANSparkMax(turningMotorChannel, MotorType.kBrushless);
+  public SwerveModule(int moduleNumber, SwerveModuleConstants constants) {
+    this.m_moduleNumber = moduleNumber;
+    this.constants = constants;
+
+    m_driveMotor = new CANSparkMax(constants.driveMotorID, MotorType.kBrushless);
+    m_turningMotor = new CANSparkMax(constants.angleMotorID, MotorType.kBrushless);
 
     m_driveEncoder = m_driveMotor.getEncoder();
     m_turningEncoder = m_turningMotor.getEncoder();
-    // Set the distance per pulse for the drive encoder. We can simply use the
-    // distance traveled for one rotation of the wheel divided by the encoder
-    // resolution.
-    m_driveEncoder.setPositionConversionFactor(ModuleConstants.kDriveEncoderDistancePerPulse);
-
-    // Set whether drive encoder should be reversed or not
-    m_driveMotor.setInverted(driveEncoderReversed);
-
-    // Set the distance (in this case, angle) in radians per pulse for the turning encoder.
-    // This is the the angle through an entire rotation (2 * pi) divided by the
-    // encoder resolution.
-    m_turningEncoder.setPositionConversionFactor(ModuleConstants.kTurningEncoderDistancePerPulse);
-
-    // Set whether turning encoder should be reversed or not
-    m_turningMotor.setInverted(turningEncoderReversed);
-
     // Limit the PID Controller's input range between -pi and pi and set the input
     // to be continuous.
     m_turningPIDController.enableContinuousInput(-Math.PI, Math.PI);
@@ -130,4 +121,56 @@ public class SwerveModule {
     m_driveEncoder.setPosition(0.0);
     m_turningEncoder.setPosition(0.0);
   }
+
+  private void configureDevices() {
+    // Drive motor configuration.
+    // NEO Motor connected to SParkMax
+    m_driveMotor.restoreFactoryDefaults();
+    m_driveMotor.clearFaults();
+    if (m_driveMotor.setIdleMode(IdleMode.kCoast) != REVLibError.kOk) {
+        SmartDashboard.putString("Drive Motor Idle Mode", "Error");
+    }
+
+    // Set the distance per pulse for the drive encoder. We can simply use the
+    // distance traveled for one rotation of the wheel divided by the encoder
+    // resolution.
+    m_driveEncoder.setPositionConversionFactor(ModuleConstants.kDriveEncoderDistancePerPulse);
+
+    // Set whether drive encoder should be reversed or not
+    m_driveMotor.setInverted(constants.driveMotorReversed);
+
+    // Set the distance (in this case, angle) in radians per pulse for the turning encoder.
+    // This is the the angle through an entire rotation (2 * pi) divided by the
+    // encoder resolution.
+    m_turningEncoder.setPositionConversionFactor(ModuleConstants.kTurningEncoderDistancePerPulse);
+
+    // Set whether turning encoder should be reversed or not
+    m_turningMotor.setInverted(constants.angleMotorReversed);
+
+    m_driveMotor.setInverted(constants.driveMotorReversed);
+    m_driveMotor.setIdleMode(Constants.ModuleConstants.DRIVE_IDLE_MODE);
+    m_driveEncoder.setPositionConversionFactor(Constants.ModuleConstants.kDriveEncoderDistancePerPulse);
+    m_driveEncoder.setPosition(0);
+
+    // Angle motor configuration.
+    // Neo Motor connected to SParkMax
+    m_turningMotor.restoreFactoryDefaults();
+    m_turningMotor.clearFaults();
+    if (m_turningMotor.setIdleMode(IdleMode.kCoast) != REVLibError.kOk) {
+        SmartDashboard.putString("Turn Motor Idle Mode", "Error");
+    }
+    m_turningMotor.setInverted(constants.angleMotorReversed);
+    m_turningMotor.setIdleMode(Constants.ModuleConstants.ANGLE_IDLE_MODE);
+    m_turningMotor.setSmartCurrentLimit(Constants.ModuleConstants.ANGLE_CURRENT_LIMIT);
+
+    /**
+     * CTRE Mag Encoder connected to the SparkMAX Absolute/Analog/PWM Duty Cycle
+     * input
+     * Native will ready 0.0 -> 1.0 for each revolution.
+     */
+    m_angleEncoder.setPositionConversionFactor(Constants.ModuleConstants.kAngleEncodeAnglePerRev);
+    m_angleEncoder.setVelocityConversionFactor(Constants.ModuleConstants.kAngleEncodeAnglePerRev);
+    m_angleEncoder.setInverted(false);
+}
+
 }

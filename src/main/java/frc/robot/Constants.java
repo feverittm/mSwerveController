@@ -4,9 +4,13 @@
 
 package frc.robot;
 
+import com.revrobotics.CANSparkMax.IdleMode;
+
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.util.Units;
+import frc.robot.utils.SwerveModuleConstants;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -63,6 +67,7 @@ public final class Constants {
   }
 
   public static final class ModuleConstants {
+
     public static final double kMaxModuleAngularSpeedRadiansPerSecond = 2 * Math.PI;
     public static final double kMaxModuleAngularAccelerationRadiansPerSecondSquared = 2 * Math.PI;
 
@@ -76,11 +81,74 @@ public final class Constants {
         // Assumes the encoders are on a 1:1 reduction with the module shaft.
         (2 * Math.PI) / (double) kEncoderCPR;
 
-    public static final double kAngleEncodeAnglePerRev = 2 * Math.PI;
+    /** Constants that apply to the whole drive train. */
+    public static final double TRACK_WIDTH = Units.inchesToMeters(24.0); // Width of the drivetrain measured from the middle of the wheels.
+    public static final double WHEEL_BASE = Units.inchesToMeters(24.0); // Length of the drivetrain measured from the middle of the wheels.
+    public static final double WHEEL_DIAMETER = Units.inchesToMeters(4);
+    public static final double WHEEL_CIRCUMFERENCE = WHEEL_DIAMETER * Math.PI;
+
+    // SDS Mk4i L2 Drive Ratio = 6.75:1, Angle Ratio = 150/7:1
+    public static final double DRIVE_GEAR_RATIO = 6.75 / 1.0; // 6.75:1
+    public static final double DRIVE_ROTATIONS_TO_METERS = WHEEL_CIRCUMFERENCE / DRIVE_GEAR_RATIO;
+    public static final double DRIVE_RPM_TO_METERS_PER_SECOND = DRIVE_ROTATIONS_TO_METERS / 60.0;
+    public static final double ANGLE_MOTOR_GEAR_RATIO = 12.8 / 1.0; // 12.8:1
+    
+    /* note that these angle constant refer to the CTRE absolute encoder */
+    public static final double kAngleEncodeAnglePerRev = (Math.PI * 2);
+    public static final double kAngleEncodeVelocityPerRev = DRIVE_ROTATIONS_TO_METERS / 60.0;
 
     public static final double kPModuleTurningController = 1;
 
     public static final double kPModuleDriveController = 1;
+
+    /** Idle modes. */
+    public static final IdleMode DRIVE_IDLE_MODE = IdleMode.kBrake;
+    public static final IdleMode ANGLE_IDLE_MODE = IdleMode.kCoast;
+
+    /** Current limiting. */
+    public static final int DRIVE_CURRENT_LIMIT = 35;
+    public static final int ANGLE_CURRENT_LIMIT = 25;
+
+    /** 
+     * Module specific constants.
+     * CanCoder offset is in DEGREES, not radians like the rest of the repo.
+     * This is to make offset slightly more accurate and easier to measure.
+     */
+    // Front Left Module
+    public static final SwerveModuleConstants kMOD_1_Constants = new SwerveModuleConstants(
+      6,
+      7,
+      false,
+      false,
+      254.5 // 360 * 0.7069
+    );
+
+    // Front Right
+    public static final SwerveModuleConstants kMOD_2_Constants = new SwerveModuleConstants(
+      4,
+      5,
+      true,
+      true,
+      152.0 // 360*0.4221 
+    );
+
+    // Back Left
+    public static final SwerveModuleConstants kMOD_3_Constants = new SwerveModuleConstants(
+      2,
+      3,
+      false,
+      false,
+      0.0
+    );
+
+    // Back Right
+    public static final SwerveModuleConstants kMOD_4_Constants = new SwerveModuleConstants(
+      1,
+      8,
+      true,
+      true,
+      0.0
+    );
   }
 
   public static final class OIConstants {
