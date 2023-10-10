@@ -116,6 +116,7 @@ public final class Constants {
      */
     // Front Left Module
     public static final SwerveModuleConstants kMOD_1_Constants = new SwerveModuleConstants(
+      1,
       6,
       7,
       false,
@@ -125,6 +126,7 @@ public final class Constants {
 
     // Front Right
     public static final SwerveModuleConstants kMOD_2_Constants = new SwerveModuleConstants(
+      2,
       4,
       5,
       true,
@@ -134,6 +136,7 @@ public final class Constants {
 
     // Back Left
     public static final SwerveModuleConstants kMOD_3_Constants = new SwerveModuleConstants(
+      3,
       2,
       3,
       false,
@@ -143,6 +146,7 @@ public final class Constants {
 
     // Back Right
     public static final SwerveModuleConstants kMOD_4_Constants = new SwerveModuleConstants(
+      4,
       1,
       8,
       true,

@@ -34,7 +34,7 @@ public class DriveSubsystem extends SubsystemBase {
       ModuleConstants.kMOD_4_Constants);
 
   // The gyro sensor
-  private final AHRS m_gyro = new AHRS();
+  private static AHRS m_gyro;
 
   // Odometry class for tracking robot pose
   SwerveDriveOdometry m_odometry =
@@ -49,7 +49,9 @@ public class DriveSubsystem extends SubsystemBase {
           });
 
   /** Creates a new DriveSubsystem. */
-  public DriveSubsystem() {}
+  public DriveSubsystem() {
+    m_gyro = new AHRS();
+  }
 
   @Override
   public void periodic() {
@@ -106,10 +108,10 @@ public class DriveSubsystem extends SubsystemBase {
                 : new ChassisSpeeds(xSpeed, ySpeed, rot));
     SwerveDriveKinematics.desaturateWheelSpeeds(
         swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
-    m_frontLeft.setDesiredState(swerveModuleStates[0]);
-    m_frontRight.setDesiredState(swerveModuleStates[1]);
-    m_rearLeft.setDesiredState(swerveModuleStates[2]);
-    m_rearRight.setDesiredState(swerveModuleStates[3]);
+    m_frontLeft.setDesiredState(swerveModuleStates[0], false);
+    m_frontRight.setDesiredState(swerveModuleStates[1], false);
+    m_rearLeft.setDesiredState(swerveModuleStates[2], false);
+    m_rearRight.setDesiredState(swerveModuleStates[3], false);
   }
 
   /**
@@ -120,10 +122,10 @@ public class DriveSubsystem extends SubsystemBase {
   public void setModuleStates(SwerveModuleState[] desiredStates) {
     SwerveDriveKinematics.desaturateWheelSpeeds(
         desiredStates, DriveConstants.kMaxSpeedMetersPerSecond);
-    m_frontLeft.setDesiredState(desiredStates[0]);
-    m_frontRight.setDesiredState(desiredStates[1]);
-    m_rearLeft.setDesiredState(desiredStates[2]);
-    m_rearRight.setDesiredState(desiredStates[3]);
+    m_frontLeft.setDesiredState(desiredStates[0], false);
+    m_frontRight.setDesiredState(desiredStates[1], false);
+    m_rearLeft.setDesiredState(desiredStates[2], false);
+    m_rearRight.setDesiredState(desiredStates[3], false);
   }
 
   /** Resets the drive encoders to currently read a position of 0. */
