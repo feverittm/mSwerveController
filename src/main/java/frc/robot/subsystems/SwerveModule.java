@@ -34,7 +34,7 @@ public class SwerveModule {
   private final RelativeEncoder m_turningEncoder;
   private final SparkMaxAbsoluteEncoder m_angleEncoder;
 
-  private double lastAngle;
+  public double lastAngle;
 
   private final PIDController m_drivePIDController = new PIDController(ModuleConstants.kPModuleDriveController, 0, 0);
 
