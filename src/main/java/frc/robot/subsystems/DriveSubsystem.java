@@ -19,23 +19,12 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class DriveSubsystem extends SubsystemBase {
   // Robot swerve modules
-  private final SwerveModule m_frontLeft = new SwerveModule(
-      1,
-      ModuleConstants.kMOD_1_Constants);
+  private final SwerveModule m_frontLeft = new SwerveModule(ModuleConstants.kMOD_1_Constants);
+  private final SwerveModule m_rearLeft = new SwerveModule(ModuleConstants.kMOD_4_Constants);
+  private final SwerveModule m_frontRight = new SwerveModule(ModuleConstants.kMOD_2_Constants);
+  private final SwerveModule m_rearRight = new SwerveModule(ModuleConstants.kMOD_3_Constants);
 
-  private final SwerveModule m_rearLeft = new SwerveModule(
-      2,
-      ModuleConstants.kMOD_2_Constants);
-
-  private final SwerveModule m_frontRight = new SwerveModule(
-      3,
-      ModuleConstants.kMOD_3_Constants);
-
-  private final SwerveModule m_rearRight = new SwerveModule(
-      4,
-      ModuleConstants.kMOD_4_Constants);
-
-  // The gyro sensor
+  // The robot's gyro
   private static AHRS m_gyro = new AHRS();
 
   // Odometry class for tracking robot pose
@@ -51,7 +40,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
-
+    // Nothing special here :-)
   }
 
   /**
@@ -64,7 +53,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   /**
-   * Resets the odometry to the specified pose.
+   * Resets the odometry to the specified pose.  Where is the robot?
    *
    * @param pose The pose to which to set the odometry.
    */
@@ -96,28 +85,28 @@ public class DriveSubsystem extends SubsystemBase {
             : new ChassisSpeeds(xSpeed, ySpeed, rot));
     SwerveDriveKinematics.desaturateWheelSpeeds(
         swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
-    m_frontLeft.setDesiredState(swerveModuleStates[0], false);
-    m_frontRight.setDesiredState(swerveModuleStates[1], false);
-    m_rearLeft.setDesiredState(swerveModuleStates[2], false);
-    m_rearRight.setDesiredState(swerveModuleStates[3], false);
+    m_frontLeft.setDesiredState(swerveModuleStates[0]);
+    m_frontRight.setDesiredState(swerveModuleStates[1]);
+    m_rearLeft.setDesiredState(swerveModuleStates[2]);
+    m_rearRight.setDesiredState(swerveModuleStates[3]);
   }
 
   public Command zeroModules() {
     return run(() -> {
       var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
-        new ChassisSpeeds(0, 0, 0));
+          new ChassisSpeeds(0, 0, 0));
       SwerveDriveKinematics.desaturateWheelSpeeds(
           swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
-      m_frontLeft.setDesiredState(swerveModuleStates[0], false);
-      m_frontRight.setDesiredState(swerveModuleStates[1], false);
-      m_rearLeft.setDesiredState(swerveModuleStates[2], false);
-      m_rearRight.setDesiredState(swerveModuleStates[3], false);
+      m_frontLeft.setDesiredState(swerveModuleStates[0]);
+      m_frontRight.setDesiredState(swerveModuleStates[1]);
+      m_rearLeft.setDesiredState(swerveModuleStates[2]);
+      m_rearRight.setDesiredState(swerveModuleStates[3]);
     }).withName("ZeroModulesCommand");
   }
 
   public Command ResetEncoders() {
     return run(() -> {
-        resetEncoders();
+      resetEncoders();
     }).withName("ResetEncodersCommand");
   }
 
@@ -129,10 +118,10 @@ public class DriveSubsystem extends SubsystemBase {
   public void setModuleStates(SwerveModuleState[] desiredStates) {
     SwerveDriveKinematics.desaturateWheelSpeeds(
         desiredStates, DriveConstants.kMaxSpeedMetersPerSecond);
-    m_frontLeft.setDesiredState(desiredStates[0], false);
-    m_frontRight.setDesiredState(desiredStates[1], false);
-    m_rearLeft.setDesiredState(desiredStates[2], false);
-    m_rearRight.setDesiredState(desiredStates[3], false);
+    m_frontLeft.setDesiredState(desiredStates[0]);
+    m_frontRight.setDesiredState(desiredStates[1]);
+    m_rearLeft.setDesiredState(desiredStates[2]);
+    m_rearRight.setDesiredState(desiredStates[3]);
   }
 
   /** Resets the drive encoders to currently read a position of 0. */
@@ -182,7 +171,6 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Front Right Angle: ", m_frontRight.lastAngle);
     SmartDashboard.putNumber("Rear Left Angle: ", m_rearLeft.lastAngle);
     SmartDashboard.putNumber("Rear Right Angle: ", m_rearRight.lastAngle);
-
     SmartDashboard.putNumber("Front Left Position: ", m_frontLeft.getPosition().distanceMeters);
   }
 }
