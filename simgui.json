@@ -7,10 +7,5 @@
         }
       }
     }
-  },
-  "NTProvider": {
-    "types": {
-      "/FMSInfo": "FMSInfo"
-    }
   }
 }

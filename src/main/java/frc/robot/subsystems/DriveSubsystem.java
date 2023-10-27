@@ -12,6 +12,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.*;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -23,6 +24,8 @@ public class DriveSubsystem extends SubsystemBase {
   private final SwerveModule m_rearLeft = new SwerveModule(ModuleConstants.kMOD_4_Constants);
   private final SwerveModule m_frontRight = new SwerveModule(ModuleConstants.kMOD_2_Constants);
   private final SwerveModule m_rearRight = new SwerveModule(ModuleConstants.kMOD_3_Constants);
+
+  public Field2d m_field = new Field2d();
 
   // The robot's gyro
   private static AHRS m_gyro = new AHRS();
@@ -41,6 +44,7 @@ public class DriveSubsystem extends SubsystemBase {
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
     // Nothing special here :-)
+
   }
 
   /**
@@ -53,7 +57,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   /**
-   * Resets the odometry to the specified pose.  Where is the robot?
+   * Resets the odometry to the specified pose. Where is the robot?
    *
    * @param pose The pose to which to set the odometry.
    */
@@ -89,6 +93,8 @@ public class DriveSubsystem extends SubsystemBase {
     m_frontRight.setDesiredState(swerveModuleStates[1]);
     m_rearLeft.setDesiredState(swerveModuleStates[2]);
     m_rearRight.setDesiredState(swerveModuleStates[3]);
+
+    System.out.println("Drive X:"+xSpeed+", Y:"+ySpeed+", Rot:"+rot);
   }
 
   public Command zeroModules() {
@@ -155,8 +161,7 @@ public class DriveSubsystem extends SubsystemBase {
     return m_gyro.getRate() * (DriveConstants.kGyroReversed ? -1.0 : 1.0);
   }
 
-  @Override
-  public void periodic() {
+  public void updateOdometry() {
     // Update the odometry in the periodic block
     m_odometry.update(
         m_gyro.getRotation2d(),
@@ -167,10 +172,22 @@ public class DriveSubsystem extends SubsystemBase {
             m_rearRight.getPosition()
         });
 
+    m_field.setRobotPose(m_odometry.getPoseMeters());
+  }
+
+  @Override
+  public void periodic() {
+
+    updateOdometry();
+
     SmartDashboard.putNumber("Front Left Angle: ", m_frontLeft.lastAngle);
     SmartDashboard.putNumber("Front Right Angle: ", m_frontRight.lastAngle);
     SmartDashboard.putNumber("Rear Left Angle: ", m_rearLeft.lastAngle);
     SmartDashboard.putNumber("Rear Right Angle: ", m_rearRight.lastAngle);
     SmartDashboard.putNumber("Front Left Position: ", m_frontLeft.getPosition().distanceMeters);
+    SmartDashboard.putNumber("Odometry X", m_odometry.getPoseMeters().getX());
+    SmartDashboard.putNumber("Odometry Y", m_odometry.getPoseMeters().getY());
+    SmartDashboard.putData("Field", m_field);
+
   }
 }
