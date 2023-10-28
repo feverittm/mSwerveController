@@ -14,7 +14,6 @@ import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
@@ -32,7 +31,7 @@ import java.util.List;
  * (including subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-    //public Field2d m_field = new Field2d();
+    public Field2d m_field = new Field2d();
 
     // The robot's subsystems
     private final DriveSubsystem m_robotDrive = new DriveSubsystem();
@@ -123,8 +122,7 @@ public class RobotContainer {
         m_robotDrive.resetOdometry(exampleTrajectory.getInitialPose());
 
         // Push the trajectory to Field2d.
-        //m_field.getObject("traj").setTrajectory(exampleTrajectory);
-
+        m_field.getObject("traj").setTrajectory(exampleTrajectory);
 
         // Run path following command, then stop at the end.
         return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0, false));
