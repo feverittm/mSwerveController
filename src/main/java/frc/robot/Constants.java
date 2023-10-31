@@ -140,6 +140,10 @@ public final class Constants {
         public static final int kDriverControllerPort = 0;
         public static final int GYRO_RESET_BUTTON = XboxController.Button.kA.value;
         public static final int ENCODER_RESET_BUTTON = XboxController.Button.kB.value;
+
+        // Joystick Deadband
+        public static final double LEFT_X_DEADBAND = 0.01;
+        public static final double LEFT_Y_DEADBAND = 0.01;
     }
 
     public static final class AutoConstants {

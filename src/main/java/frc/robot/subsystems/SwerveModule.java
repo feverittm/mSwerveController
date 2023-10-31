@@ -68,6 +68,20 @@ public class SwerveModule {
         lastAngle = getState().angle.getRadians();
     }
 
+    public Rotation2d getAngle() {
+        double raw_angle = m_angleEncoder.getPosition();
+        Rotation2d rot = new Rotation2d(raw_angle);
+        return rot;
+    }
+
+    public void setMotorBrake (boolean brake) {
+        if (brake) {
+            m_driveMotor.setIdleMode(IdleMode.kBrake);
+        } else {
+            m_turningMotor.setIdleMode(IdleMode.kCoast);
+        }
+    }
+
     /**
      * Returns the current state of the module.
      *
@@ -75,8 +89,7 @@ public class SwerveModule {
      */
     public SwerveModuleState getState() {
         double velocity = m_driveMotorEncoder.getVelocity();
-        Rotation2d rot = new Rotation2d(m_angleEncoder.getPosition());
-        return new SwerveModuleState(velocity, rot);
+        return new SwerveModuleState(velocity, getAngle());
     }
 
     /**
@@ -106,6 +119,8 @@ public class SwerveModule {
         final double turnOutput = m_turningPIDController.calculate(m_angleEncoder.getPosition(), state.angle.getRadians()
                 - Units.degreesToRadians(module_constants.angleEncoderOffsetDegrees));
 
+        // Update the previous commanded angle for reference
+        lastAngle = state.angle.getRadians();
         // Calculate the turning motor output from the turning PID controller.
         m_driveMotor.set(driveOutput);
         m_turningMotor.set(turnOutput);
@@ -178,5 +193,4 @@ public class SwerveModule {
 
         m_turningPIDController.enableContinuousInput(-Math.PI, Math.PI);
     }
-
 }

@@ -29,6 +29,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   // The robot's gyro
   private static AHRS m_gyro = new AHRS();
+  private static boolean fieldMode = false;
 
   // Odometry class for tracking robot pose
   SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
@@ -94,7 +95,7 @@ public class DriveSubsystem extends SubsystemBase {
     m_rearLeft.setDesiredState(swerveModuleStates[2]);
     m_rearRight.setDesiredState(swerveModuleStates[3]);
 
-    System.out.println("Drive X:"+xSpeed+", Y:"+ySpeed+", Rot:"+rot);
+    // System.out.println("Drive X:"+xSpeed+", Y:"+ySpeed+", Rot:"+rot);
   }
 
   public Command zeroModules() {
@@ -143,6 +144,20 @@ public class DriveSubsystem extends SubsystemBase {
     m_gyro.zeroYaw();
   }
 
+  /** Zeroes the heading of the robot. */
+  public void setFieldMode() {
+    fieldMode = fieldMode ? false : true;
+  }
+
+  /** Zeroes the heading of the robot. */
+  public boolean getFieldMode() {
+    return fieldMode;
+  }
+
+  public Command SetFieldMode() {
+    return this.runOnce(() -> setFieldMode()).withName("SetFieldModeCommand");
+  }
+
   /**
    * Returns the heading of the robot.
    *
@@ -150,6 +165,18 @@ public class DriveSubsystem extends SubsystemBase {
    */
   public double getHeading() {
     return m_gyro.getRotation2d().getDegrees();
+  }
+
+  /**
+   * Sets the drive motors to brake/coast mode.
+   *
+   * @param brake True to set motors to brake mode, false for coast.
+   */
+  public void setMotorBrake(boolean brake) {
+    m_frontLeft.setMotorBrake(brake);
+    m_frontRight.setMotorBrake(brake);
+    m_rearLeft.setMotorBrake(brake);
+    m_rearRight.setMotorBrake(brake);
   }
 
   /**
@@ -190,4 +217,5 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putData("Field", m_field);
 
   }
+
 }
