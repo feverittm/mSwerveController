@@ -13,7 +13,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
@@ -31,7 +30,7 @@ import java.util.List;
  * (including subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-    public Field2d m_field = new Field2d();
+
 
     // The robot's subsystems
     private final DriveSubsystem m_robotDrive = new DriveSubsystem();
@@ -49,7 +48,7 @@ public class RobotContainer {
         // Configure default commands
         setDriveMode();
 
-        //SmartDashboard.putData(m_field);
+
     }
 
     /**
@@ -110,9 +109,6 @@ public class RobotContainer {
 
         // Reset odometry to the starting pose of the trajectory.
         m_robotDrive.resetOdometry(exampleTrajectory.getInitialPose());
-
-        // Push the trajectory to Field2d.
-        m_field.getObject("traj").setTrajectory(exampleTrajectory);
 
         // Run path following command, then stop at the end.
         return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0, false));

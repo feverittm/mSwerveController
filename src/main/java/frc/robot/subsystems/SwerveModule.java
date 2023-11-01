@@ -18,7 +18,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Constants.ModuleConstants;
@@ -62,7 +61,7 @@ public class SwerveModule {
         m_turningMotorEncoder = m_turningMotor.getEncoder();
 
         m_angleEncoder = m_turningMotor.getAbsoluteEncoder(Type.kDutyCycle);
-
+        
 
         configureDevices();
         lastAngle = getState().angle.getRadians();
@@ -116,8 +115,7 @@ public class SwerveModule {
         final double driveOutput = m_drivePIDController.calculate(m_driveMotorEncoder.getVelocity(), state.speedMetersPerSecond);
 
         // Calculate the turning motor output from the turning PID controller.
-        final double turnOutput = m_turningPIDController.calculate(m_angleEncoder.getPosition(), state.angle.getRadians()
-                - Units.degreesToRadians(module_constants.angleEncoderOffsetDegrees));
+        final double turnOutput = m_turningPIDController.calculate(m_angleEncoder.getPosition(), state.angle.getRadians());
 
         // Update the previous commanded angle for reference
         lastAngle = state.angle.getRadians();
@@ -186,11 +184,11 @@ public class SwerveModule {
          * input
          * Native will ready 0.0 -> 1.0 for each revolution.
          */
-        m_angleEncoder.setPositionConversionFactor(ModuleConstants.kAngleEncodeAnglePerRev);
+        m_angleEncoder.setZeroOffset(module_constants.angleEncoderOffset); // native units 0.0 -> 1.0
         m_angleEncoder.setPositionConversionFactor(Constants.ModuleConstants.kAngleEncodeAnglePerRev);
         m_angleEncoder.setVelocityConversionFactor(Constants.ModuleConstants.kAngleEncodeAnglePerRev);
         m_angleEncoder.setInverted(false);
 
-        m_turningPIDController.enableContinuousInput(-Math.PI, Math.PI);
+        m_turningPIDController.enableContinuousInput(0, 2*Math.PI);
     }
 }

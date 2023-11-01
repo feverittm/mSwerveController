@@ -98,41 +98,41 @@ public final class Constants {
         // Front Left Module
         public static final SwerveModuleConstants kMOD_1_Constants = new SwerveModuleConstants(
                 1,
-                6,
-                7,
-                false,
-                false,
-                254.5 // 360 * 0.7069
+                8,
+                1,
+                true,
+                true,
+                0.060 // 254.5 degrees = 360 * 0.060
         );
 
         // Front Right
         public static final SwerveModuleConstants kMOD_2_Constants = new SwerveModuleConstants(
                 2,
-                4,
-                5,
+                6,
+                7,
                 true,
                 true,
-                152.0 // 360*0.4221
+                0.7069 // 152.0 degrees = 360 * 0.7069
         );
 
         // Back Left
         public static final SwerveModuleConstants kMOD_3_Constants = new SwerveModuleConstants(
-                3,
+                4,
                 2,
                 3,
-                false,
-                false,
-                0.0
+                true,
+                true,
+                0.324 // 131.0 degrees = 360 * 0.324
         );
 
         // Back Right
         public static final SwerveModuleConstants kMOD_4_Constants = new SwerveModuleConstants(
+                3,
                 4,
-                1,
-                8,
+                5,
                 true,
                 true,
-                0.0
+                0.4221 // 152.0 degrees = 360 * 0.4221
         );
     }
 

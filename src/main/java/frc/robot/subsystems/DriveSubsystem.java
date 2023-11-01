@@ -12,8 +12,8 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Robot;
 import frc.robot.Constants.*;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -24,8 +24,6 @@ public class DriveSubsystem extends SubsystemBase {
   private final SwerveModule m_rearLeft = new SwerveModule(ModuleConstants.kMOD_4_Constants);
   private final SwerveModule m_frontRight = new SwerveModule(ModuleConstants.kMOD_2_Constants);
   private final SwerveModule m_rearRight = new SwerveModule(ModuleConstants.kMOD_3_Constants);
-
-  public Field2d m_field = new Field2d();
 
   // The robot's gyro
   private static AHRS m_gyro = new AHRS();
@@ -95,7 +93,7 @@ public class DriveSubsystem extends SubsystemBase {
     m_rearLeft.setDesiredState(swerveModuleStates[2]);
     m_rearRight.setDesiredState(swerveModuleStates[3]);
 
-    // System.out.println("Drive X:"+xSpeed+", Y:"+ySpeed+", Rot:"+rot);
+    System.out.println("Drive X:"+xSpeed+", Y:"+ySpeed+", Rot:"+rot);
   }
 
   public Command zeroModules() {
@@ -198,8 +196,7 @@ public class DriveSubsystem extends SubsystemBase {
             m_rearLeft.getPosition(),
             m_rearRight.getPosition()
         });
-
-    m_field.setRobotPose(m_odometry.getPoseMeters());
+    Robot.m_field.setRobotPose(m_odometry.getPoseMeters());
   }
 
   @Override
@@ -207,15 +204,10 @@ public class DriveSubsystem extends SubsystemBase {
 
     updateOdometry();
 
-    SmartDashboard.putNumber("Front Left Angle: ", m_frontLeft.lastAngle);
-    SmartDashboard.putNumber("Front Right Angle: ", m_frontRight.lastAngle);
-    SmartDashboard.putNumber("Rear Left Angle: ", m_rearLeft.lastAngle);
-    SmartDashboard.putNumber("Rear Right Angle: ", m_rearRight.lastAngle);
     SmartDashboard.putNumber("Front Left Position: ", m_frontLeft.getPosition().distanceMeters);
+    SmartDashboard.putNumber("Module Position Angle", m_frontLeft.getPosition().angle.getDegrees());
     SmartDashboard.putNumber("Odometry X", m_odometry.getPoseMeters().getX());
     SmartDashboard.putNumber("Odometry Y", m_odometry.getPoseMeters().getY());
-    SmartDashboard.putData("Field", m_field);
-
   }
 
 }
