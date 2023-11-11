@@ -102,6 +102,7 @@ public final class Constants {
                 1,
                 true,
                 true,
+                false,
                 0.060 // 254.5 degrees = 360 * 0.060
         );
 
@@ -112,6 +113,7 @@ public final class Constants {
                 7,
                 true,
                 true,
+                false,
                 0.7069 // 152.0 degrees = 360 * 0.7069
         );
 
@@ -122,6 +124,7 @@ public final class Constants {
                 3,
                 true,
                 true,
+                false,
                 0.324 // 131.0 degrees = 360 * 0.324
         );
 
@@ -132,6 +135,7 @@ public final class Constants {
                 5,
                 true,
                 true,
+                false,
                 0.4221 // 152.0 degrees = 360 * 0.4221
         );
     }
