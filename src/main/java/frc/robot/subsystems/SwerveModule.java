@@ -184,7 +184,7 @@ public class SwerveModule {
          * input
          * Native will ready 0.0 -> 1.0 for each revolution.
          */
-        m_angleEncoder.setZeroOffset(module_constants.angleEncoderOffset); // native units 0.0 -> 1.0
+        m_angleEncoder.setZeroOffset(module_constants.angleEncoderOffsetDegrees); // native units 0.0 -> 1.0
         m_angleEncoder.setPositionConversionFactor(Constants.ModuleConstants.kAngleEncodeAnglePerRev);
         m_angleEncoder.setVelocityConversionFactor(Constants.ModuleConstants.kAngleEncodeAnglePerRev);
         m_angleEncoder.setInverted(false);
