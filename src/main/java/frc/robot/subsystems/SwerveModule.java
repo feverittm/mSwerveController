@@ -18,7 +18,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Constants.ModuleConstants;
@@ -188,17 +187,12 @@ public class SwerveModule {
          * Native will ready 0.0 -> 1.0 for each revolution.
          * will use an internal getAbsoluteEncoder() method to scale the data from the sensor.
          */
-<<<<<<< HEAD
         m_angleEncoder.setZeroOffset(module_constants.angleEncoderOffsetDegrees); // native units 0.0 -> 1.0
         m_angleEncoder.setPositionConversionFactor(Constants.ModuleConstants.kAngleEncodeAnglePerRev);
         m_angleEncoder.setVelocityConversionFactor(Constants.ModuleConstants.kAngleEncodeAnglePerRev);
         m_angleEncoder.setInverted(false);
 
         m_turningPIDController.enableContinuousInput(0, 2*Math.PI);
-=======
-        m_angleEncoder.setInverted(module_constants.angleEncoderReversed);
-        m_turningPIDController.enableContinuousInput(-Math.PI, Math.PI);
->>>>>>> 23c37fb2ed8814cc7677b902ced580958ae2ee4a
     }
 
 }
