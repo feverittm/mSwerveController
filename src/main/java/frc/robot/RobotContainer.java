@@ -30,107 +30,103 @@ import java.util.List;
  * (including subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
+	// The robot's subsystems
+	private final DriveSubsystem m_robotDrive = new DriveSubsystem();
 
+	// The driver's controller
+	CommandXboxController m_driverController = new CommandXboxController(OIConstants.kDriverControllerPort);
 
-    // The robot's subsystems
-    private final DriveSubsystem m_robotDrive = new DriveSubsystem();
+	/**
+	 * The container for the robot. Contains subsystems, OI devices, and commands.
+	 */
+	public RobotContainer() {
+		// Configure the button bindings
+		configureButtonBindings();
 
-    // The driver's controller
-    CommandXboxController m_driverController = new CommandXboxController(OIConstants.kDriverControllerPort);
+		// Configure default commands
+		setDriveMode();
+	}
 
-    /**
-     * The container for the robot. Contains subsystems, OI devices, and commands.
-     */
-    public RobotContainer() {
-        // Configure the button bindings
-        configureButtonBindings();
+	/**
+	 * Use this method to define bindings between conditions and commands. These
+	 * are useful for
+	 * automating robot behaviors based on button and sensor input.
+	 *
+	 * <p>
+	 * Should be called during {@link Robot#robotInit()}.
+	 *
+	 * <p>
+	 * Event binding methods are available on the {@link Trigger} class.
+	 */
+	private void configureButtonBindings() {
+		m_driverController.a().onTrue(m_robotDrive.zeroModules());
+		m_driverController.b().onTrue(m_robotDrive.ResetEncoders());
+		m_driverController.y().onTrue(m_robotDrive.SetFieldMode());
+	}
 
-        // Configure default commands
-        setDriveMode();
+	/**
+	 * Use this to pass the autonomous command to the main {@link Robot} class.
+	 *
+	 * @return the command to run in autonomous
+	 */
+	public Command getAutonomousCommand() {
+		// Create config for trajectory
+		TrajectoryConfig config = new TrajectoryConfig(
+				AutoConstants.kMaxSpeedMetersPerSecond,
+				AutoConstants.kMaxAccelerationMetersPerSecondSquared)
+				// Add kinematics to ensure max speed is actually obeyed
+				.setKinematics(DriveConstants.kDriveKinematics);
 
+		// An example trajectory to follow. All units in meters.
+		Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
+				// Start at the origin facing the +X direction
+				new Pose2d(0, 0, new Rotation2d(0)),
+				// Pass through these two interior waypoints, making an 's' curve path
+				List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
+				// End 3 meters straight ahead of where we started, facing forward
+				new Pose2d(3, 0, new Rotation2d(0)),
+				config);
 
-    }
+		var thetaController = new ProfiledPIDController(
+				AutoConstants.kPThetaController, 0, 0, AutoConstants.kThetaControllerConstraints);
+		thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
-    /**
-     * Use this method to define bindings between conditions and commands. These
-     * are useful for
-     * automating robot behaviors based on button and sensor input.
-     *
-     * <p>
-     * Should be called during {@link Robot#robotInit()}.
-     *
-     * <p>
-     * Event binding methods are available on the {@link Trigger} class.
-     */
-    private void configureButtonBindings() {
-        m_driverController.a().onTrue(m_robotDrive.zeroModules());
-        m_driverController.b().onTrue(m_robotDrive.ResetEncoders());
-        m_driverController.y().onTrue(m_robotDrive.SetFieldMode());
-    }
+		SwerveControllerCommand swerveControllerCommand = new SwerveControllerCommand(
+				exampleTrajectory,
+				m_robotDrive::getPose, // Functional interface to feed supplier
+				DriveConstants.kDriveKinematics,
 
-    /**
-     * Use this to pass the autonomous command to the main {@link Robot} class.
-     *
-     * @return the command to run in autonomous
-     */
-    public Command getAutonomousCommand() {
-        // Create config for trajectory
-        TrajectoryConfig config = new TrajectoryConfig(
-                AutoConstants.kMaxSpeedMetersPerSecond,
-                AutoConstants.kMaxAccelerationMetersPerSecondSquared)
-                // Add kinematics to ensure max speed is actually obeyed
-                .setKinematics(DriveConstants.kDriveKinematics);
+				// Position controllers
+				new PIDController(AutoConstants.kPXController, 0, 0),
+				new PIDController(AutoConstants.kPYController, 0, 0),
+				thetaController,
+				m_robotDrive::setModuleStates,
+				m_robotDrive);
 
-        // An example trajectory to follow. All units in meters.
-        Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
-                // Start at the origin facing the +X direction
-                new Pose2d(0, 0, new Rotation2d(0)),
-                // Pass through these two interior waypoints, making an 's' curve path
-                List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
-                // End 3 meters straight ahead of where we started, facing forward
-                new Pose2d(3, 0, new Rotation2d(0)),
-                config);
+		// Reset odometry to the starting pose of the trajectory.
+		m_robotDrive.resetOdometry(exampleTrajectory.getInitialPose());
 
-        var thetaController = new ProfiledPIDController(
-                AutoConstants.kPThetaController, 0, 0, AutoConstants.kThetaControllerConstraints);
-        thetaController.enableContinuousInput(-Math.PI, Math.PI);
+		// Run path following command, then stop at the end.
+		return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0, false));
+	}
 
-        SwerveControllerCommand swerveControllerCommand = new SwerveControllerCommand(
-                exampleTrajectory,
-                m_robotDrive::getPose, // Functional interface to feed supplier
-                DriveConstants.kDriveKinematics,
+	public void setDriveMode() {
+		// Configure default commands
+		m_robotDrive.setDefaultCommand(
+				// The left stick controls translation of the robot.
+				// Turning is controlled by the X axis of the right stick.
+				new RunCommand(
+						() -> m_robotDrive.drive(
+								MathUtil.applyDeadband(m_driverController.getLeftY(),
+										Constants.OIConstants.LEFT_Y_DEADBAND),
+								MathUtil.applyDeadband(m_driverController.getLeftX(),
+										Constants.OIConstants.LEFT_X_DEADBAND),
+								-m_driverController.getRightX(),
+								false),
+						m_robotDrive));
+	}
 
-                // Position controllers
-                new PIDController(AutoConstants.kPXController, 0, 0),
-                new PIDController(AutoConstants.kPYController, 0, 0),
-                thetaController,
-                m_robotDrive::setModuleStates,
-                m_robotDrive);
-
-        // Reset odometry to the starting pose of the trajectory.
-        m_robotDrive.resetOdometry(exampleTrajectory.getInitialPose());
-
-        // Run path following command, then stop at the end.
-        return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0, false));
-    }
-
-    public void setDriveMode() {
-        // Configure default commands
-        m_robotDrive.setDefaultCommand(
-                // The left stick controls translation of the robot.
-                // Turning is controlled by the X axis of the right stick.
-                new RunCommand(
-                        () -> m_robotDrive.drive(
-                                MathUtil.applyDeadband(m_driverController.getLeftY(),
-                                        Constants.OIConstants.LEFT_Y_DEADBAND),
-                                MathUtil.applyDeadband(m_driverController.getLeftX(),
-                                        Constants.OIConstants.LEFT_X_DEADBAND),
-                                -m_driverController.getRightX(),
-                                false),
-                        m_robotDrive));
-    }
-
-    public void setMotorBrake(boolean brake) {
-        m_robotDrive.setMotorBrake(brake);
-    }
+	public void setMotorBrake(boolean brake) {
+		m_robotDrive.setMotorBrake(brake);
+	}
 }

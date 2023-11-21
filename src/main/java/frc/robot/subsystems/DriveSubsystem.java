@@ -92,8 +92,6 @@ public class DriveSubsystem extends SubsystemBase {
     m_frontRight.setDesiredState(swerveModuleStates[1]);
     m_rearLeft.setDesiredState(swerveModuleStates[2]);
     m_rearRight.setDesiredState(swerveModuleStates[3]);
-
-    System.out.println("Drive X:"+xSpeed+", Y:"+ySpeed+", Rot:"+rot);
   }
 
   public Command zeroModules() {
@@ -208,6 +206,7 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Module Position Angle", m_frontLeft.getPosition().angle.getDegrees());
     SmartDashboard.putNumber("Odometry X", m_odometry.getPoseMeters().getX());
     SmartDashboard.putNumber("Odometry Y", m_odometry.getPoseMeters().getY());
+    SmartDashboard.putNumber("Module/Raw Angle", m_frontLeft.getAbsoluteEncoder());
   }
 
 }
