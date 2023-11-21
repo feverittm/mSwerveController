@@ -169,10 +169,10 @@ public class DriveSubsystem extends SubsystemBase {
    * @param brake True to set motors to brake mode, false for coast.
    */
   public void setMotorBrake(boolean brake) {
-    m_frontLeft.setMotorBrake(brake);
-    m_frontRight.setMotorBrake(brake);
-    m_rearLeft.setMotorBrake(brake);
-    m_rearRight.setMotorBrake(brake);
+    m_frontLeft.setDriveMotorBrake(brake);
+    m_frontRight.setDriveMotorBrake(brake);
+    m_rearLeft.setDriveMotorBrake(brake);
+    m_rearRight.setDriveMotorBrake(brake);
   }
 
   /**
