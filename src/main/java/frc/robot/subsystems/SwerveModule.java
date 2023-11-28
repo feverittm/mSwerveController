@@ -21,42 +21,45 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Constants.ModuleConstants;
+import frc.robot.utils.LinearMap;
 import frc.robot.utils.SwerveModuleConstants;
 
 public class SwerveModule {
-  private SwerveModuleConstants module_constants;
+    private SwerveModuleConstants module_constants;
 
-  public final CANSparkMax m_driveMotor;
-  public final CANSparkMax m_turningMotor;
+    private final CANSparkMax m_driveMotor;
+    private final CANSparkMax m_turningMotor;
 
-  public final RelativeEncoder m_driveMotorEncoder;
-  public final RelativeEncoder m_turningMotorEncoder;
-  public final SparkMaxAbsoluteEncoder m_angleEncoder;
+    private final RelativeEncoder m_driveMotorEncoder;
+    private final RelativeEncoder m_turningMotorEncoder;
+    private final SparkMaxAbsoluteEncoder m_angleEncoder;
 
-  public double lastAngle;
+    public double lastAngle;
 
-  public final PIDController m_drivePIDController = new PIDController(ModuleConstants.kPModuleDriveController, 0, 0);
+    private final PIDController m_drivePIDController = new PIDController(ModuleConstants.kPModuleDriveController, 0, 0);
 
-  // Using a TrapezoidProfile PIDController to allow for smooth turning
-  public final ProfiledPIDController m_turningPIDController = new ProfiledPIDController(
-      ModuleConstants.kPModuleTurningController,
-      0,
-      0,
-      new TrapezoidProfile.Constraints(
-          ModuleConstants.kMaxModuleAngularSpeedRadiansPerSecond,
-          ModuleConstants.kMaxModuleAngularAccelerationRadiansPerSecondSquared));
+    // Using a TrapezoidProfile PIDController to allow for smooth turning
+    private final ProfiledPIDController m_turningPIDController = new ProfiledPIDController(
+            ModuleConstants.kPModuleTurningController,
+            0,
+            0,
+            new TrapezoidProfile.Constraints(
+                    ModuleConstants.kMaxModuleAngularSpeedRadiansPerSecond,
+                    ModuleConstants.kMaxModuleAngularAccelerationRadiansPerSecondSquared));
 
-  /**
-   * Constructs a SwerveModule.
-   *
-   * @param module_constants The module constants (i.e. CAN IDs) for this specific
-   *                         module
-   */
-  public SwerveModule(SwerveModuleConstants module_constants) {
-    this.module_constants = module_constants;
+    /**
+     * Constructs a SwerveModule.
+     *
+     * @param module_constants The module constants (i.e. CAN IDs) for this specific
+     *                         module
+     */
+    public SwerveModule(SwerveModuleConstants module_constants) {
+        this.module_constants = module_constants;
 
-    m_driveMotor = new CANSparkMax(module_constants.driveMotorID, MotorType.kBrushless);
-    m_turningMotor = new CANSparkMax(module_constants.angleMotorID, MotorType.kBrushless);
+        m_driveMotor = new CANSparkMax(module_constants.driveMotorID, MotorType.kBrushless);
+        m_turningMotor = new CANSparkMax(module_constants.angleMotorID, MotorType.kBrushless);
+        m_driveMotor.restoreFactoryDefaults();
+        m_turningMotor.restoreFactoryDefaults();
 
     m_driveMotorEncoder = m_driveMotor.getEncoder();
     m_turningMotorEncoder = m_turningMotor.getEncoder();
@@ -69,12 +72,10 @@ public class SwerveModule {
   }
 
   /**
-   * Linear data translation. Copied (with appropriate license) from the Arduino
-   * source.
-   * 
-   * @param Input   Variable
-   * @param in_min  expected minimum input value
-   * @param in_max  expected maximum input value
+   * Linear data translation.  Copied (with appropriate license) from the Arduino source.
+   * @param Input Variable
+   * @param in_min expected minimum input value
+   * @param in_max expected maximum input value
    * @param out_min desired minimum output value
    * @param out_max desired maximum output value
    * @return
@@ -99,7 +100,7 @@ public class SwerveModule {
    */
   public Rotation2d getAngle() {
     double raw_angle = getRawAngle();
-    double mapped = map(raw_angle, 0.0, 1.0, -Math.PI, Math.PI);
+    double mapped = LinearMap.map(raw_angle, 0.0, 1.0, -Math.PI, Math.PI);
     SmartDashboard.putNumber("Mapped Raw Module Angle", mapped);
     Rotation2d rot = new Rotation2d(mapped);
     return rot;
