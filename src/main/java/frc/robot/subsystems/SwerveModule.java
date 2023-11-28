@@ -34,8 +34,6 @@ public class SwerveModule {
     private final RelativeEncoder m_turningMotorEncoder;
     private final SparkMaxAbsoluteEncoder m_angleEncoder;
 
-    public double lastAngle;
-
     private final PIDController m_drivePIDController = new PIDController(ModuleConstants.kPModuleDriveController, 0, 0);
 
     // Using a TrapezoidProfile PIDController to allow for smooth turning
@@ -68,20 +66,6 @@ public class SwerveModule {
 
     configureDevices();
     resetEncoders();
-    lastAngle = getState().angle.getRadians();
-  }
-
-  /**
-   * Linear data translation.  Copied (with appropriate license) from the Arduino source.
-   * @param Input Variable
-   * @param in_min expected minimum input value
-   * @param in_max expected maximum input value
-   * @param out_min desired minimum output value
-   * @param out_max desired maximum output value
-   * @return
-   */
-  public double map(double x, double in_min, double in_max, double out_min, double out_max) {
-    return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
   }
 
   /**
@@ -122,14 +106,6 @@ public class SwerveModule {
    */
   public double getDriveEncoderVelocity() {
     return m_driveMotorEncoder.getVelocity();
-  }
-
-  public void setDriveMotorBrake(boolean brake) {
-    if (brake) {
-      m_driveMotor.setIdleMode(IdleMode.kBrake);
-    } else {
-      m_turningMotor.setIdleMode(IdleMode.kCoast);
-    }
   }
 
   /**
@@ -175,9 +151,6 @@ public class SwerveModule {
 
     SmartDashboard.putNumber("driveOutput", driveOutput);
     SmartDashboard.putNumber("turnOutput", turnOutput);
-
-    // Update the previous commanded angle for reference
-    lastAngle = state.angle.getRadians();
 
     // Calculate the turning motor output from the turning PID controller.
     m_driveMotor.set(driveOutput);

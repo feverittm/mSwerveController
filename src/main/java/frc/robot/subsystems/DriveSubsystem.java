@@ -7,7 +7,6 @@ package frc.robot.subsystems;
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
 
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -42,11 +41,15 @@ public class DriveSubsystem extends SubsystemBase {
           m_rearRight.getPosition()
       });
 
-  private SwerveAutoBuilder autoBuilder  = null;
-
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
-    // Nothing special here :-)
+    new Thread(() -> {
+      try {
+        Thread.sleep(1000);
+        zeroHeading();
+      } catch (Exception e) {
+      }
+    }).start();
   }
 
   /**
@@ -167,18 +170,6 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   /**
-   * Sets the drive motors to brake/coast mode.
-   *
-   * @param brake True to set motors to brake mode, false for coast.
-   */
-  public void setMotorBrake(boolean brake) {
-    m_frontLeft.setMotorBrake(brake);
-    m_frontRight.setMotorBrake(brake);
-    m_rearLeft.setMotorBrake(brake);
-    m_rearRight.setMotorBrake(brake);
-  }
-
-  /**
    * Returns the turn rate of the robot.
    *
    * @return The turn rate of the robot, in degrees per second
@@ -209,7 +200,7 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Module Position Angle", m_frontLeft.getPosition().angle.getDegrees());
     SmartDashboard.putNumber("Odometry X", m_odometry.getPoseMeters().getX());
     SmartDashboard.putNumber("Odometry Y", m_odometry.getPoseMeters().getY());
-    SmartDashboard.putNumber("Module/Raw Angle", m_frontLeft.getRawAbsoluteEncoder());
+    SmartDashboard.putNumber("Module/Raw Angle", m_frontLeft.getRawAngle());
     SmartDashboard.putNumber("Module/Mapped Angle", m_frontLeft.getAngle().getRadians());
   }
 

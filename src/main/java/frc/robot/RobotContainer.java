@@ -125,8 +125,4 @@ public class RobotContainer {
 								false),
 						m_robotDrive));
 	}
-
-	public void setMotorBrake(boolean brake) {
-		m_robotDrive.setMotorBrake(brake);
-	}
 }
