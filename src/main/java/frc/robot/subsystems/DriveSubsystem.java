@@ -5,9 +5,9 @@
 package frc.robot.subsystems;
 
 import com.kauailabs.navx.frc.AHRS;
-import com.pathplanner.lib.auto.SwerveAutoBuilder;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
@@ -33,7 +33,7 @@ public class DriveSubsystem extends SubsystemBase {
   // Odometry class for tracking robot pose
   SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
       DriveConstants.kDriveKinematics,
-      m_gyro.getRotation2d(),
+      new Rotation2d(0.0),
       new SwerveModulePosition[] {
           m_frontLeft.getPosition(),
           m_frontRight.getPosition(),
@@ -163,10 +163,14 @@ public class DriveSubsystem extends SubsystemBase {
   /**
    * Returns the heading of the robot.
    *
-   * @return the robot's heading in degrees, from -180 to 180
+   * @return the robot's heading in degrees
    */
   public double getHeading() {
-    return m_gyro.getRotation2d().getDegrees();
+    return Math.IEEEremainder(m_gyro.getAngle(), 360);
+  }
+
+  public Rotation2d getGyroRotation2d() {
+    return Rotation2d.fromDegrees(getHeading());
   }
 
   /**
@@ -178,10 +182,17 @@ public class DriveSubsystem extends SubsystemBase {
     return m_gyro.getRate() * (DriveConstants.kGyroReversed ? -1.0 : 1.0);
   }
 
+  public void stopModules() {
+    m_frontLeft.stop();
+    m_frontRight.stop();
+    m_rearLeft.stop();
+    m_rearRight.stop();
+  }
+
   public void updateOdometry() {
     // Update the odometry in the periodic block
     m_odometry.update(
-        m_gyro.getRotation2d(),
+        getGyroRotation2d(),
         new SwerveModulePosition[] {
             m_frontLeft.getPosition(),
             m_frontRight.getPosition(),
@@ -200,8 +211,9 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Module Position Angle", m_frontLeft.getPosition().angle.getDegrees());
     SmartDashboard.putNumber("Odometry X", m_odometry.getPoseMeters().getX());
     SmartDashboard.putNumber("Odometry Y", m_odometry.getPoseMeters().getY());
+    SmartDashboard.putString("Robot Location", getPose().getTranslation().toString());
     SmartDashboard.putNumber("Module/Raw Angle", m_frontLeft.getRawAngle());
     SmartDashboard.putNumber("Module/Mapped Angle", m_frontLeft.getAngle().getRadians());
+    SmartDashboard.putNumber("Gyro Rotation", getGyroRotation2d().getDegrees());
   }
-
 }

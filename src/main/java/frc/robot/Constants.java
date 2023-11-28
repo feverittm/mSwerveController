@@ -78,10 +78,6 @@ public final class Constants {
         public static final double kAngleEncodeAnglePerRev = (Math.PI * 2);
         public static final double kAngleEncodeVelocityPerRev = DRIVE_ROTATIONS_TO_METERS / 60.0;
 
-        public static final double kPModuleTurningController = 0.01;
-
-        public static final double kPModuleDriveController = 0.0020645;
-
         /** Idle modes. */
         public static final IdleMode DRIVE_IDLE_MODE = IdleMode.kBrake;
         public static final IdleMode ANGLE_IDLE_MODE = IdleMode.kCoast;
@@ -89,6 +85,10 @@ public final class Constants {
         /** Current limiting. */
         public static final int DRIVE_CURRENT_LIMIT = 35;
         public static final int ANGLE_CURRENT_LIMIT = 25;
+
+        /** Module PID Kp constants */
+        public static final double kPModuleTurningController = 0.01;
+        public static final double kPModuleDriveController = 0.0020645;
 
         /**
          * Module specific constants.
