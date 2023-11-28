@@ -64,14 +64,17 @@ public class SwerveModule {
     m_angleEncoder = m_turningMotor.getAbsoluteEncoder(Type.kDutyCycle);
 
     configureDevices();
+    resetEncoders();
     lastAngle = getState().angle.getRadians();
   }
 
   /**
-   * Linear data translation.  Copied (with appropriate license) from the Arduino source.
-   * @param Input Variable
-   * @param in_min expected minimum input value
-   * @param in_max expected maximum input value
+   * Linear data translation. Copied (with appropriate license) from the Arduino
+   * source.
+   * 
+   * @param Input   Variable
+   * @param in_min  expected minimum input value
+   * @param in_max  expected maximum input value
    * @param out_min desired minimum output value
    * @param out_max desired maximum output value
    * @return
@@ -82,6 +85,7 @@ public class SwerveModule {
 
   /**
    * Get the raw value from the absolute encoder on the SparkMax
+   * 
    * @return raw angle (0.0->1.0)
    */
   public double getRawAngle() {
@@ -90,6 +94,7 @@ public class SwerveModule {
 
   /**
    * Return the rotation vector for the absolute module angular position
+   * 
    * @return angle vector mapped to the expected -pi->+pi range
    */
   public Rotation2d getAngle() {
@@ -102,6 +107,7 @@ public class SwerveModule {
 
   /**
    * Get the Drive motor encoder position
+   * 
    * @return the drive encoder position
    */
   public double getDriveEncoderPosition() {
@@ -110,6 +116,7 @@ public class SwerveModule {
 
   /**
    * Get the drive wheel velocity
+   * 
    * @return drive encoder velocity
    */
   public double getDriveEncoderVelocity() {
@@ -125,7 +132,7 @@ public class SwerveModule {
   }
 
   /**
-   * Returns the current state of the module.
+   * Returns the current state (velocity/angle) of the module.
    *
    * @return The current state of the module.
    */
@@ -170,6 +177,7 @@ public class SwerveModule {
 
     // Update the previous commanded angle for reference
     lastAngle = state.angle.getRadians();
+
     // Calculate the turning motor output from the turning PID controller.
     m_driveMotor.set(driveOutput);
     m_turningMotor.set(turnOutput);
@@ -178,7 +186,7 @@ public class SwerveModule {
   /** Zeroes all the SwerveModule encoders. */
   public void resetEncoders() {
     m_driveMotorEncoder.setPosition(0.0);
-    m_turningMotorEncoder.setPosition(0.0);
+    m_turningMotorEncoder.setPosition(getAngle().getRadians());
   }
 
   /*

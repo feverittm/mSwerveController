@@ -5,6 +5,8 @@
 package frc.robot.subsystems;
 
 import com.kauailabs.navx.frc.AHRS;
+import com.pathplanner.lib.auto.SwerveAutoBuilder;
+
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -40,10 +42,11 @@ public class DriveSubsystem extends SubsystemBase {
           m_rearRight.getPosition()
       });
 
+  private SwerveAutoBuilder autoBuilder  = null;
+
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
     // Nothing special here :-)
-
   }
 
   /**
@@ -92,8 +95,6 @@ public class DriveSubsystem extends SubsystemBase {
     m_frontRight.setDesiredState(swerveModuleStates[1]);
     m_rearLeft.setDesiredState(swerveModuleStates[2]);
     m_rearRight.setDesiredState(swerveModuleStates[3]);
-
-    System.out.println("Drive X:"+xSpeed+", Y:"+ySpeed+", Rot:"+rot);
   }
 
   public Command zeroModules() {
