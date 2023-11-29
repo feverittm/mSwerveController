@@ -44,6 +44,12 @@ public class SwerveModule {
           ModuleConstants.kMaxModuleAngularSpeedRadiansPerSecond,
           ModuleConstants.kMaxModuleAngularAccelerationRadiansPerSecondSquared));
 
+  // For tuning only.  Use a simple pid P-Only controller to get the value for kP.  Then we can work on Ka and Ks (trapezoidal constraints) 
+  private final PIDController m_simpleTurningPIDController = new PIDController(
+      ModuleConstants.kPModuleTurningController,
+      0,
+      0);
+
   /**
    * Constructs a SwerveModule.
    *
@@ -139,17 +145,19 @@ public class SwerveModule {
     // getState().angle);
     SwerveModuleState state = desiredState;
 
-    SmartDashboard.putNumber("Desired Angle", state.angle.getRadians());
-
     // Calculate the drive output from the drive PID controller.
     final double driveOutput = m_drivePIDController.calculate(m_driveMotorEncoder.getVelocity(),
         state.speedMetersPerSecond);
 
     // Calculate the turning motor output from the turning PID controller.
-    final double turnOutput = m_turningPIDController.calculate(m_angleEncoder.getPosition(), state.angle.getRadians());
+    final double turnOutput_trap = m_turningPIDController.calculate(m_angleEncoder.getPosition(), state.angle.getRadians());
+    final double turnOutput = m_simpleTurningPIDController.calculate(m_angleEncoder.getPosition(), state.angle.getRadians());
 
-    SmartDashboard.putNumber("driveOutput", driveOutput);
-    SmartDashboard.putNumber("turnOutput", turnOutput);
+    SmartDashboard.putNumber("State/setpoint", m_turningPIDController.getSetpoint().position);
+    SmartDashboard.putNumber("State/driveOutput", driveOutput);
+    SmartDashboard.putNumber("State/turnOutput", turnOutput);
+    SmartDashboard.putNumber("State/Trapezoidal turnOutput", turnOutput_trap);
+
 
     // Calculate the turning motor output from the turning PID controller.
     m_driveMotor.set(driveOutput);
@@ -206,11 +214,14 @@ public class SwerveModule {
      * input
      * Native will ready 0.0 -> 1.0 for each revolution.
      */
-    // m_angleEncoder.setZeroOffset(module_constants.angleEncoderOffsetDegrees);
-    // m_angleEncoder.setPositionConversionFactor(Constants.ModuleConstants.kAngleEncodeAnglePerRev);
-    // m_angleEncoder.setVelocityConversionFactor(Constants.ModuleConstants.kAngleEncodeAnglePerRev);
+    m_angleEncoder.setZeroOffset(module_constants.angleEncoderOffsetDegrees);
     m_angleEncoder.setInverted(false);
-
+    m_angleEncoder.setAverageDepth(4);
+    
+    /**
+     * Make PID continuous around the 180degree point of the rotation
+     */
     m_turningPIDController.enableContinuousInput(-Math.PI, Math.PI);
+    m_simpleTurningPIDController.enableContinuousInput(-Math.PI, Math.PI);
   }
 }
