@@ -215,7 +215,7 @@ public class SwerveModule {
      * Native will ready 0.0 -> 1.0 for each revolution.
      */
     m_angleEncoder.setZeroOffset(module_constants.angleEncoderOffsetDegrees);
-    m_angleEncoder.setInverted(false);
+    m_angleEncoder.setInverted(module_constants.angleEncoderReversed);
     m_angleEncoder.setAverageDepth(4);
     
     /**
