@@ -214,9 +214,9 @@ public class SwerveModule {
      * input
      * Native will ready 0.0 -> 1.0 for each revolution.
      */
-    m_angleEncoder.setZeroOffset(module_constants.angleEncoderOffsetDegrees);
+    m_angleEncoder.setZeroOffset(module_constants.angleEncoderOffset);
     m_angleEncoder.setInverted(module_constants.angleEncoderReversed);
-    m_angleEncoder.setAverageDepth(4);
+    m_angleEncoder.setAverageDepth(16);
     
     /**
      * Make PID continuous around the 180degree point of the rotation
