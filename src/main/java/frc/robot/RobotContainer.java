@@ -6,10 +6,12 @@ package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
 import frc.robot.Constants.OIConstants;
+import frc.robot.commands.SwerveJoystickCmd;
 import frc.robot.subsystems.DriveSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -28,11 +30,11 @@ public class RobotContainer {
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
 	 */
 	public RobotContainer() {
-		// Configure the button bindings
-		configureButtonBindings();
-
 		// Configure default commands
 		setDriveMode();
+
+		// Configure the button bindings
+		configureButtonBindings();
 	}
 
 	/**
@@ -112,18 +114,25 @@ public class RobotContainer {
 	}
 
 	public void setDriveMode() {
+		        m_robotDrive.setDefaultCommand(new SwerveJoystickCmd(
+                m_robotDrive,
+                () -> -m_driverController.getRawAxis(OIConstants.kDriverYAxis),
+                () -> m_driverController.getRawAxis(OIConstants.kDriverXAxis),
+                () -> m_driverController.getRawAxis(OIConstants.kDriverRotAxis),
+                false));
+
 		// Configure default commands
-		m_robotDrive.setDefaultCommand(
-				// The left stick controls translation of the robot.
-				// Turning is controlled by the X axis of the right stick.
-				new RunCommand(
-						() -> m_robotDrive.drive(
-								MathUtil.applyDeadband(m_driverController.getLeftY(),
-										Constants.OIConstants.LEFT_Y_DEADBAND),
-								MathUtil.applyDeadband(m_driverController.getLeftX(),
-										Constants.OIConstants.LEFT_X_DEADBAND),
-								-m_driverController.getRightX(),
-								false),
-						m_robotDrive));
+		// m_robotDrive.setDefaultCommand(
+		// 		// The left stick controls translation of the robot.
+		// 		// Turning is controlled by the X axis of the right stick.
+		// 		new RunCommand(
+		// 				() -> m_robotDrive.drive(
+		// 						MathUtil.applyDeadband(m_driverController.getLeftY(),
+		// 								Constants.OIConstants.LEFT_Y_DEADBAND),
+		// 						MathUtil.applyDeadband(m_driverController.getLeftX(),
+		// 								Constants.OIConstants.LEFT_X_DEADBAND),
+		// 						-m_driverController.getRightX(),
+		// 						false),
+		// 				m_robotDrive));
 	}
 }
