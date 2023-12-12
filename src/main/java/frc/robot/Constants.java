@@ -27,9 +27,14 @@ import frc.robot.utils.SwerveModuleConstants;
  */
 public final class Constants {
         public static final class DriveConstants {
-                public static final double kTrackWidth = 0.5;
-                // Distance between centers of right and left wheels on robot
-                public static final double kWheelBase = 0.7;
+                /** Constants that apply to the whole drive train. */
+                public static final double kTrackWidth = Units.inchesToMeters(24.0); // Width of the drivetrain measured
+                                                                                     // from the middle of the wheels.
+                public static final double kWheelBase = Units.inchesToMeters(24.0); // Length of the drivetrain measured
+                                                                                    // from the middle of the wheels.
+                public static final double kWheelDiameterMeters = Units.inchesToMeters(4);
+                public static final double WHEEL_CIRCUMFERENCE = kWheelDiameterMeters * Math.PI;
+
                 // Distance between front and back wheels on robot
                 public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
                                 new Translation2d(kWheelBase / 2, kTrackWidth / 2),
@@ -57,33 +62,16 @@ public final class Constants {
                 public static final double kMaxModuleAngularSpeedRadiansPerSecond = 2 * Math.PI;
                 public static final double kMaxModuleAngularAccelerationRadiansPerSecondSquared = 2 * Math.PI;
 
-                public static final int kEncoderCPR = 1024;
-                public static final double kWheelDiameterMeters = 0.15;
-                public static final double kDriveEncoderDistancePerPulse =
-                                // Assumes the encoders are directly mounted on the wheel shafts
-                                (kWheelDiameterMeters * Math.PI) / (double) kEncoderCPR;
-
-                public static final double kTurningEncoderDistancePerPulse =
-                                // Assumes the encoders are on a 1:1 reduction with the module shaft.
-                                (2 * Math.PI) / (double) kEncoderCPR;
-
-                /** Constants that apply to the whole drive train. */
-                public static final double TRACK_WIDTH = Units.inchesToMeters(24.0); // Width of the drivetrain measured
-                                                                                     // from the middle of the wheels.
-                public static final double WHEEL_BASE = Units.inchesToMeters(24.0); // Length of the drivetrain measured
-                                                                                    // from the middle of the wheels.
-                public static final double WHEEL_DIAMETER = Units.inchesToMeters(4);
-                public static final double WHEEL_CIRCUMFERENCE = WHEEL_DIAMETER * Math.PI;
-
-                // SDS Mk4i L2 Drive Ratio = 6.75:1, Angle Ratio = 150/7:1
-                public static final double DRIVE_GEAR_RATIO = 6.75 / 1.0; // 6.75:1
-                public static final double DRIVE_ROTATIONS_TO_METERS = WHEEL_CIRCUMFERENCE / DRIVE_GEAR_RATIO;
-                public static final double DRIVE_RPM_TO_METERS_PER_SECOND = DRIVE_ROTATIONS_TO_METERS / 60.0;
-                public static final double ANGLE_MOTOR_GEAR_RATIO = 12.8 / 1.0; // 12.8:1
-
-                /* note that these angle constant refer to the CTRE absolute encoder */
-                public static final double kAngleEncodeAnglePerRev = (Math.PI * 2);
-                public static final double kAngleEncodeVelocityPerRev = DRIVE_ROTATIONS_TO_METERS / 60.0;
+                public static final double kWheelDiameterMeters = Units.inchesToMeters(4);
+                public static final double kDriveMotorGearRatio = 1 / 6.75;
+                public static final int kTurnMotorEncoderTicksPerRotation = 42;
+                public static final double kTurningMotorRotationPerSteerRotation = 150 / 7;
+                public static final double kDriveEncoderRot2Meter = kDriveMotorGearRatio * Math.PI * kWheelDiameterMeters;
+                public static final double kTurningEncoderRot2Rad = kTurningMotorRotationPerSteerRotation
+                    * kTurnMotorEncoderTicksPerRotation;
+                // public static final double kTurningEncoderRot2Rad = kTurningMotorGearRatio;
+                public static final double kDriveEncoderRPM2MeterPerSec = kDriveEncoderRot2Meter / 60;
+                public static final double kTurningEncoderRPM2RadPerSec = kTurningEncoderRot2Rad / 60;
 
                 /** Idle modes. */
                 public static final IdleMode DRIVE_IDLE_MODE = IdleMode.kBrake;
@@ -94,7 +82,7 @@ public final class Constants {
                 public static final int ANGLE_CURRENT_LIMIT = 25;
 
                 /** Module PID Kp constants */
-                public static final double kPModuleTurningController = 0.25;
+                public static final double kPModuleTurningController = 0.5;
                 public static final double kPModuleDriveController = 0.0020645;
 
                 /**
@@ -118,7 +106,7 @@ public final class Constants {
                                 2,
                                 6,
                                 7,
-                                true,
+                                false,
                                 true,
                                 false,
                                 0.48 // 0.7069 // 152.0 degrees = 360 * 0.7069
@@ -140,7 +128,7 @@ public final class Constants {
                                 3,
                                 4,
                                 5,
-                                true,
+                                false,
                                 true,
                                 false,
                                 0.202 // 0.4221 // 152.0 degrees = 360 * 0.4221
