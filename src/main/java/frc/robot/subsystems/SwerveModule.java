@@ -174,10 +174,10 @@ public class SwerveModule {
         m_angleEncoder.getPosition(),
         state.angle.getRadians());
 
-    SmartDashboard.putNumber("State/setpoint", m_turningPIDController.getSetpoint().position);
-    SmartDashboard.putNumber("State/driveOutput", driveOutput);
-    SmartDashboard.putNumber("State/turnOutput", turnOutput);
-    SmartDashboard.putNumber("State/Trapezoidal turnOutput", turnOutput_trap);
+    SmartDashboard.putNumber("Swerve[" + m_turningMotor.getDeviceId() + "] setpoint", m_turningPIDController.getSetpoint().position);
+    SmartDashboard.putNumber("Swerve[" + m_turningMotor.getDeviceId() + "] driveOutput", driveOutput);
+    SmartDashboard.putNumber("Swerve[" + m_turningMotor.getDeviceId() + "] turnOutput", turnOutput);
+    SmartDashboard.putNumber("Swerve[" + m_turningMotor.getDeviceId() + "] Trapezoidal turnOutput", turnOutput_trap);
 
     // Calculate the turning motor output from the turning PID controller.
     m_driveMotor.set(driveOutput);
