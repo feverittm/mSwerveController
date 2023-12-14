@@ -14,7 +14,6 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Robot;
 import frc.robot.Constants.*;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -54,7 +53,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   public Rotation2d getRotation2d() {
     return Rotation2d.fromDegrees(getHeading());
-}
+  }
 
   /**
    * Returns the currently-estimated pose of the robot.
@@ -150,12 +149,14 @@ public class DriveSubsystem extends SubsystemBase {
     m_gyro.reset();
   }
 
-  /** Zeroes the heading of the robot. */
+  /** Set weather drive motion is field relative or robot relative. */
   public void setFieldMode() {
     fieldMode = fieldMode ? false : true;
   }
 
-  /** Zeroes the heading of the robot. */
+  /**
+   * Get the heading mode for driving the robot
+   */
   public boolean getFieldMode() {
     return fieldMode;
   }
@@ -203,7 +204,7 @@ public class DriveSubsystem extends SubsystemBase {
             m_rearLeft.getPosition(),
             m_rearRight.getPosition()
         });
-    Robot.m_field.setRobotPose(m_odometry.getPoseMeters());
+
     SmartDashboard.putNumber("Robot Heading", getHeading());
     SmartDashboard.putString("Robot Location", getPose().getTranslation().toString());
   }
