@@ -11,7 +11,7 @@ import frc.robot.subsystems.DriveSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
+
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -53,6 +53,9 @@ public class RobotContainer {
 		m_driverController.b().onTrue(m_robotDrive.ResetEncoders());
 		m_driverController.y().onTrue(m_robotDrive.SetFieldMode());
 		m_driverController.x().onTrue(moveTurnCommand(Math.PI/2.0));
+
+		// need to create a toggle for field oriented drive mode.
+		m_driverController.leftBumper().toggleOnTrue(getAutonomousCommand())
 	}
 
 	/**
@@ -119,7 +122,7 @@ public class RobotContainer {
                 () -> -m_driverController.getRawAxis(OIConstants.kDriverYAxis),
                 () -> m_driverController.getRawAxis(OIConstants.kDriverXAxis),
                 () -> m_driverController.getRawAxis(OIConstants.kDriverRotAxis),
-                false));
+                () -> false));
 
 		// Configure default commands
 		// m_robotDrive.setDefaultCommand(
