@@ -212,5 +212,8 @@ public class DriveSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     updateOdometry();
+
+    SmartDashboard.putNumber("Swerve Absolute", m_frontLeft.getRawAngle());
+    SmartDashboard.putNumber("Swerve Turning", m_frontLeft.getTurningPosition());
   }
 }

@@ -76,7 +76,7 @@ public class SwerveModule {
    * Returns current turn position in range -pi to pi
    */
   public double getTurningPosition() {
-    return m_turningMotorEncoder.getPosition();
+    return (m_turningMotorEncoder.getPosition() %(2*Math.PI));
   }
 
   public double getTurningVelocity() {
@@ -107,7 +107,7 @@ public class SwerveModule {
    * @return raw angle (0.0->1.0)
    */
   public double getRawAngle() {
-    return m_angleEncoder.getPosition();
+    return m_angleEncoder.getPosition() ;
   }
 
   /**
@@ -117,7 +117,7 @@ public class SwerveModule {
    */
 
   public double getAbsoluteEncoderRad() {
-    double angle = 2.0 * Math.PI * getRawAngle();
+    double angle = getRawAngle();
     // angle -= absoluteEncoderOffsetRad;
     return angle * (module_constants.angleEncoderReversed ? -1.0 : 1.0);
   }
@@ -174,6 +174,8 @@ public class SwerveModule {
         m_angleEncoder.getPosition(),
         state.angle.getRadians());
 
+    SmartDashboard.putNumber("Swerve[" + m_turningMotor.getDeviceId() + "] Absolute", getAbsoluteEncoderRad());
+    SmartDashboard.putNumber("Swerve[" + m_turningMotor.getDeviceId() + "] Turning", getTurningPosition());
     SmartDashboard.putNumber("Swerve[" + m_turningMotor.getDeviceId() + "] setpoint", m_turningPIDController.getSetpoint().position);
     SmartDashboard.putNumber("Swerve[" + m_turningMotor.getDeviceId() + "] driveOutput", driveOutput);
     SmartDashboard.putNumber("Swerve[" + m_turningMotor.getDeviceId() + "] turnOutput", turnOutput);
@@ -225,8 +227,8 @@ public class SwerveModule {
     m_turningMotor.setInverted(module_constants.angleMotorReversed);
     m_turningMotor.setSmartCurrentLimit(
         Constants.ModuleConstants.ANGLE_CURRENT_LIMIT);
-    m_driveMotorEncoder.setPositionConversionFactor(ModuleConstants.kTurningEncoderRot2Rad);
-    m_driveMotorEncoder.setVelocityConversionFactor(ModuleConstants.kTurningEncoderRPM2RadPerSec);
+    m_turningMotorEncoder.setPositionConversionFactor(ModuleConstants.kTurningEncoderRot2Rad); //ModuleConstants.kTurningEncoderRot2Rad
+    m_turningMotorEncoder.setVelocityConversionFactor(ModuleConstants.kDriveEncoderRPM2MeterPerSec);
 
     /**
      * CTRE Mag Encoder connected to the SparkMAX Absolute/Analog/PWM Duty Cycle
@@ -236,14 +238,15 @@ public class SwerveModule {
     m_angleEncoder.setZeroOffset(module_constants.angleEncoderOffset);
     m_angleEncoder.setInverted(module_constants.angleEncoderReversed);
     m_angleEncoder.setAverageDepth(16);
+    m_angleEncoder.setPositionConversionFactor(2 * Math.PI);
 
     /**
      * Make PID continuous around the 180degree point of the rotation
      */
-    m_turningPIDController.enableContinuousInput(-Math.PI, Math.PI);
-    m_turningPIDController.setTolerance(1.0);
+    m_turningPIDController.enableContinuousInput(0, 2*Math.PI);
+    m_turningPIDController.setTolerance(5.0);
 
-    m_simpleTurningPIDController.enableContinuousInput(-Math.PI, Math.PI);
-    m_simpleTurningPIDController.setTolerance(1.0);
+    m_simpleTurningPIDController.enableContinuousInput(0, 2*Math.PI);
+    m_simpleTurningPIDController.setTolerance(5.0);
   }
 }

@@ -74,8 +74,8 @@ public final class Constants {
                 public static final int kTurnMotorEncoderTicksPerRotation = 42;
                 public static final double kTurningMotorRotationPerSteerRotation = 1 / 21.4; // 150/7:1
                 public static final double kDriveEncoderRot2Meter = kDriveMotorGearRatio * Math.PI * kWheelDiameterMeters;
-                public static final double kTurningEncoderRot2Rad = kTurningMotorRotationPerSteerRotation
-                    * kTurnMotorEncoderTicksPerRotation;
+                public static final double kTurningEncoderRot2Rad = kTurningMotorRotationPerSteerRotation *(2*Math.PI);
+                   // * kTurnMotorEncoderTicksPerRotation;
                 // public static final double kTurningEncoderRot2Rad = kTurningMotorGearRatio;
                 public static final double kDriveEncoderRPM2MeterPerSec = kDriveEncoderRot2Meter / 60;
                 public static final double kTurningEncoderRPM2RadPerSec = kTurningEncoderRot2Rad / 60;
@@ -89,7 +89,7 @@ public final class Constants {
                 public static final int ANGLE_CURRENT_LIMIT = 25;
 
                 /** Module PID Kp constants */
-                public static final double kPModuleTurningController = 0.5;
+                public static final double kPModuleTurningController = 0.10;
                 public static final double kPModuleDriveController = 0.0020645;
 
                 /**
@@ -105,7 +105,7 @@ public final class Constants {
                                 true,
                                 true,
                                 false,
-                                0.28 // 254.5 degrees = 360 * 0.060
+                                0.89 // 254.5 degrees = 360 * 0.060
                 );
 
                 // Front Right
